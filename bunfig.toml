@@ -1,0 +1,5 @@
+[build]
+entrypoints = ["./main.js"]
+outdir = "./dist"
+naming = "pricing.[ext]"
+minify = true 

@@ -1,0 +1,7 @@
+{
+  "name": "heard-pricing-scripts",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "bun build ./heard-pricing.js --outdir ./dist/heard-pricing.js --minify"
+  }
+}
