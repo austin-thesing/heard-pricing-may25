@@ -95,16 +95,17 @@ document.addEventListener("DOMContentLoaded", function () {
     cards = Array.from(pricingCardsWrap.children);
     if (cards.length <= 1) return; // No need for slider if 1 or 0 cards
 
-    pricingCardsWrap.style.display = "flex";
-    pricingCardsWrap.style.overflowX = "hidden"; // Hide scrollbar, swipe will handle navigation
-    pricingCardsWrap.style.scrollSnapType = "x mandatory"; // Optional: for smoother snapping
-    pricingCardsWrap.style.webkitOverflowScrolling = "touch"; // For momentum scrolling on iOS
+    pricingCardsWrap.style.display = "block";
+    pricingCardsWrap.style.overflowX = "hidden";
+    pricingCardsWrap.style.scrollSnapType = "x mandatory"; // This might be less relevant if not truly scrolling
+    pricingCardsWrap.style.webkitOverflowScrolling = "touch";
 
     cards.forEach((card, index) => {
-      card.style.minWidth = "100%"; // Each card takes full width of the container
-      card.style.scrollSnapAlign = "start"; // Snap to the start of each card
-      card.style.display = index === 0 ? "block" : "none";
+      card.style.minWidth = "100%";
+      card.style.scrollSnapAlign = "start"; // This might be less relevant
+      card.style.display = index === 0 ? "flex" : "none"; // Active card is flex, others none
     });
+
     isSliderActive = true;
     currentCardIndex = 0;
     createControls(); // Create arrows and indicator container
@@ -143,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function updateCardVisibility() {
     if (!isSliderActive || cards.length === 0) return;
     cards.forEach((card, index) => {
-      card.style.display = index === currentCardIndex ? "block" : "none";
+      card.style.display = index === currentCardIndex ? "flex" : "none"; // Active card is flex, others none
     });
     updateIndicators();
     updateArrowStates();
