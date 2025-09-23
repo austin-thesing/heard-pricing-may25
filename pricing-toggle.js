@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const priceElements = document.querySelectorAll("[price-per-month][price-per-annual]");
   const detailElements = document.querySelectorAll("[monthly-details][annual-details]");
   const hideIfMonthlyElements = document.querySelectorAll('[hide-if="monthly"]');
-  const priceMonthElements = document.querySelectorAll(".price-month[ppm-annually][ppm-monthly]");
+  const priceMonthElements = document.querySelectorAll(".price-month");
 
   let currentView = "annual"; // Initial view
 
