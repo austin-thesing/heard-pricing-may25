@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const detailElements = document.querySelectorAll("[monthly-details][annual-details]");
   const hideIfMonthlyElements = document.querySelectorAll('[hide-if="monthly"]');
   const priceMonthElements = document.querySelectorAll(".price-month");
+  const taxPackageValue = document.querySelectorAll(".tax-package-value");
 
   let currentView = "annual"; // Initial view
 
@@ -21,6 +22,9 @@ document.addEventListener("DOMContentLoaded", () => {
       priceMonthElements.forEach((el) => {
         el.textContent = el.getAttribute("ppm-annually");
       });
+      taxPackageValue.forEach((el) => {
+        el.textContent = el.getAttribute("a-value");
+      });
     } else {
       // monthly view
       priceElements.forEach((el) => {
@@ -34,6 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       priceMonthElements.forEach((el) => {
         el.textContent = el.getAttribute("ppm-monthly");
+      });
+      taxPackageValue.forEach((el) => {
+        el.textContent = el.getAttribute("m-value");
       });
     }
   }
