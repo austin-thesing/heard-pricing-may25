@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const hideIfMonthlyElements = document.querySelectorAll('[hide-if="monthly"]');
   const priceMonthElements = document.querySelectorAll(".price-month");
   const taxPackageValue = document.querySelectorAll(".tax-package-value");
+  const planBadges = document.querySelectorAll(".badge-tax-plan");
 
   let currentView = "annual"; // Initial view
 
@@ -25,6 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
       taxPackageValue.forEach((el) => {
         el.textContent = el.getAttribute("a-value");
       });
+      planBadges.forEach((el) => {
+        const value = el.getAttribute("a-value");
+        if (value) {
+          el.textContent = value;
+        }
+      });
     } else {
       // monthly view
       priceElements.forEach((el) => {
@@ -41,6 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       taxPackageValue.forEach((el) => {
         el.textContent = el.getAttribute("m-value");
+      });
+      planBadges.forEach((el) => {
+        const value = el.getAttribute("m-value");
+        if (value) {
+          el.textContent = value;
+        }
       });
     }
   }
