@@ -1,60 +1,44 @@
 document.addEventListener("DOMContentLoaded", () => {
   const toggleButton = document.querySelector(".pricing-chart_toggle-container");
-  const priceElements = document.querySelectorAll("[price-per-month][price-per-annual]");
-  const detailElements = document.querySelectorAll("[monthly-details][annual-details]");
-  const hideIfMonthlyElements = document.querySelectorAll('[hide-if="monthly"]');
-  const priceMonthElements = document.querySelectorAll(".price-month");
-  const taxPackageValue = document.querySelectorAll(".tax-package-value");
-  const planBadges = document.querySelectorAll(".badge-tax-plan");
+
+  const getPriceElements = () => document.querySelectorAll("[price-per-month][price-per-annual]");
+  const getDetailElements = () => document.querySelectorAll("[monthly-details][annual-details]");
+  const getHideIfMonthlyElements = () => document.querySelectorAll('[hide-if="monthly"]');
+  const getPriceMonthElements = () => document.querySelectorAll(".price-month");
+  const getTaxPackageValues = () => document.querySelectorAll(".tax-package-value");
+  const getPlanBadges = () => document.querySelectorAll(".badge-tax-plan");
 
   let currentView = "annual"; // Initial view
 
+  const setTextFromAttr = (elements, attributeName) => {
+    elements.forEach((el) => {
+      const value = el.getAttribute(attributeName);
+      if (value !== null && value !== el.textContent) {
+        el.textContent = value;
+      }
+    });
+  };
+
   function updateView() {
     if (currentView === "annual") {
-      priceElements.forEach((el) => {
-        el.textContent = el.getAttribute("price-per-annual");
-      });
-      detailElements.forEach((el) => {
-        el.textContent = el.getAttribute("annual-details");
-      });
-      hideIfMonthlyElements.forEach((el) => {
+      setTextFromAttr(getPriceElements(), "price-per-annual");
+      setTextFromAttr(getDetailElements(), "annual-details");
+      getHideIfMonthlyElements().forEach((el) => {
         el.style.opacity = "1";
       });
-      priceMonthElements.forEach((el) => {
-        el.textContent = el.getAttribute("ppm-annually");
-      });
-      taxPackageValue.forEach((el) => {
-        el.textContent = el.getAttribute("a-value");
-      });
-      planBadges.forEach((el) => {
-        const value = el.getAttribute("a-value");
-        if (value) {
-          el.textContent = value;
-        }
-      });
+      setTextFromAttr(getPriceMonthElements(), "ppm-annually");
+      setTextFromAttr(getTaxPackageValues(), "a-value");
+      setTextFromAttr(getPlanBadges(), "a-value");
     } else {
       // monthly view
-      priceElements.forEach((el) => {
-        el.textContent = el.getAttribute("price-per-month");
-      });
-      detailElements.forEach((el) => {
-        el.textContent = el.getAttribute("monthly-details");
-      });
-      hideIfMonthlyElements.forEach((el) => {
+      setTextFromAttr(getPriceElements(), "price-per-month");
+      setTextFromAttr(getDetailElements(), "monthly-details");
+      getHideIfMonthlyElements().forEach((el) => {
         el.style.opacity = "0";
       });
-      priceMonthElements.forEach((el) => {
-        el.textContent = el.getAttribute("ppm-monthly");
-      });
-      taxPackageValue.forEach((el) => {
-        el.textContent = el.getAttribute("m-value");
-      });
-      planBadges.forEach((el) => {
-        const value = el.getAttribute("m-value");
-        if (value) {
-          el.textContent = value;
-        }
-      });
+      setTextFromAttr(getPriceMonthElements(), "ppm-monthly");
+      setTextFromAttr(getTaxPackageValues(), "m-value");
+      setTextFromAttr(getPlanBadges(), "m-value");
     }
   }
 
@@ -69,4 +53,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial setup
   updateView();
+  window.addEventListener("load", updateView);
 });
