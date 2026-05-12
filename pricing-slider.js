@@ -10,85 +10,69 @@ document.addEventListener("DOMContentLoaded", function () {
   let touchendX = 0;
   let currentCardIndex = 0;
   let cards = [];
-  let indicatorsContainer = null;
-  let prevArrow = null;
-  let nextArrow = null;
+  let switchOptions = [];
 
   function createControls() {
-    // Create container for controls for easier management and styling
     const controlsWrapper = document.createElement("div");
     controlsWrapper.className = "pricing-slider-controls";
-    controlsWrapper.style.textAlign = "center";
-    controlsWrapper.style.marginTop = "10px";
+    controlsWrapper.setAttribute("role", "tablist");
+    controlsWrapper.setAttribute("aria-label", "Pricing plans");
+    controlsWrapper.style.display = "flex";
+    controlsWrapper.style.alignItems = "center";
+    controlsWrapper.style.gap = "4px";
+    controlsWrapper.style.width = "100%";
+    controlsWrapper.style.padding = "4px";
+    controlsWrapper.style.marginBottom = "14px";
+    controlsWrapper.style.border = "1px solid rgba(34, 103, 82, 0.18)";
+    controlsWrapper.style.borderRadius = "999px";
+    controlsWrapper.style.background = "#fff";
+    controlsWrapper.style.boxShadow = "0 1px 5px rgba(0, 0, 0, 0.14)";
 
-    prevArrow = document.createElement("button");
-    prevArrow.innerHTML = "&#9664;"; // Left arrow
-    prevArrow.className = "slider-arrow prev-arrow";
-    prevArrow.style.marginRight = "10px";
-    prevArrow.style.padding = "5px 10px";
-    prevArrow.style.cursor = "pointer";
+    const fallbackLabels = cards.length === 3 ? ["Lite", "Essential", "Premium"] : [];
 
-    nextArrow = document.createElement("button");
-    nextArrow.innerHTML = "&#9654;"; // Right arrow
-    nextArrow.className = "slider-arrow next-arrow";
-    nextArrow.style.marginLeft = "10px";
-    nextArrow.style.padding = "5px 10px";
-    nextArrow.style.cursor = "pointer";
-
-    indicatorsContainer = document.createElement("div");
-    indicatorsContainer.className = "slider-indicators";
-    indicatorsContainer.style.display = "inline-block"; // Keep indicators between arrows
-
-    prevArrow.addEventListener("click", showPrevCard);
-    nextArrow.addEventListener("click", showNextCard);
-
-    controlsWrapper.appendChild(prevArrow);
-    controlsWrapper.appendChild(indicatorsContainer);
-    controlsWrapper.appendChild(nextArrow);
-
-    // Insert controls after the pricingCardsWrap element
-    pricingCardsWrap.parentNode.insertBefore(controlsWrapper, pricingCardsWrap.nextSibling);
-
-    updateArrowStates();
-  }
-
-  function createIndicators() {
-    if (!indicatorsContainer) return;
-    indicatorsContainer.innerHTML = ""; // Clear existing indicators
-    cards.forEach((_, index) => {
-      const indicator = document.createElement("span");
-      indicator.className = "slider-indicator";
-      indicator.style.height = "10px";
-      indicator.style.width = "10px";
-      indicator.style.backgroundColor = "#bbb";
-      indicator.style.borderRadius = "50%";
-      indicator.style.display = "inline-block";
-      indicator.style.margin = "0 5px";
-      indicator.style.cursor = "pointer";
-      indicator.addEventListener("click", () => {
+    switchOptions = cards.map((card, index) => {
+      const headingText = card.querySelector("h3")?.textContent?.trim();
+      const option = document.createElement("button");
+      option.type = "button";
+      option.className = "pricing-slider-option";
+      option.textContent = fallbackLabels[index] || headingText || `Plan ${index + 1}`;
+      option.setAttribute("role", "tab");
+      option.style.flex = "1 1 0";
+      option.style.minWidth = "0";
+      option.style.border = "0";
+      option.style.borderRadius = "999px";
+      option.style.padding = "11px 8px";
+      option.style.background = "transparent";
+      option.style.color = "#545c57";
+      option.style.font = "inherit";
+      option.style.fontWeight = "600";
+      option.style.fontSize = "16px";
+      option.style.lineHeight = "1";
+      option.style.cursor = "pointer";
+      option.style.whiteSpace = "nowrap";
+      option.addEventListener("click", () => {
         currentCardIndex = index;
         updateCardVisibility();
       });
-      indicatorsContainer.appendChild(indicator);
+      controlsWrapper.appendChild(option);
+      return option;
     });
+
+    // Insert controls above the pricing cards on mobile
+    pricingCardsWrap.parentNode.insertBefore(controlsWrapper, pricingCardsWrap);
+
+    updateSwitchOptions();
   }
 
-  function updateIndicators() {
-    if (!indicatorsContainer || !isSliderActive) return;
-    const allIndicators = indicatorsContainer.children;
-    for (let i = 0; i < allIndicators.length; i++) {
-      allIndicators[i].style.backgroundColor = i === currentCardIndex ? "#717171" : "#bbb";
-    }
-  }
-
-  function updateArrowStates() {
-    if (!prevArrow || !nextArrow || !isSliderActive) return;
-    prevArrow.disabled = currentCardIndex === 0;
-    nextArrow.disabled = currentCardIndex === cards.length - 1;
-    prevArrow.style.opacity = prevArrow.disabled ? "0.5" : "1";
-    nextArrow.style.opacity = nextArrow.disabled ? "0.5" : "1";
-    prevArrow.style.cursor = prevArrow.disabled ? "default" : "pointer";
-    nextArrow.style.cursor = nextArrow.disabled ? "default" : "pointer";
+  function updateSwitchOptions() {
+    if (!isSliderActive) return;
+    switchOptions.forEach((option, index) => {
+      const isActive = index === currentCardIndex;
+      option.setAttribute("aria-selected", isActive ? "true" : "false");
+      option.style.background = isActive ? "#23745c" : "transparent";
+      option.style.color = isActive ? "#fff" : "#545c57";
+      option.style.boxShadow = isActive ? "0 1px 2px rgba(0, 0, 0, 0.08)" : "none";
+    });
   }
 
   function initSlider() {
@@ -108,8 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     isSliderActive = true;
     currentCardIndex = 0;
-    createControls(); // Create arrows and indicator container
-    createIndicators(); // Populate indicators
+    createControls(); // Create segmented plan switch
     updateCardVisibility(); // Initial visibility and control state update
   }
 
@@ -133,9 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (controlsWrapper) {
       controlsWrapper.remove();
     }
-    indicatorsContainer = null;
-    prevArrow = null;
-    nextArrow = null;
+    switchOptions = [];
 
     isSliderActive = false;
     cards = []; // Clear the cards array
@@ -146,8 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
     cards.forEach((card, index) => {
       card.style.display = index === currentCardIndex ? "flex" : "none"; // Active card is flex, others none
     });
-    updateIndicators();
-    updateArrowStates();
+    updateSwitchOptions();
   }
 
   function showNextCard() {
