@@ -80,7 +80,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cards.length <= 1) return; // No need for slider if 1 or 0 cards
 
     pricingCardsWrap.style.display = "block";
-    pricingCardsWrap.style.overflowX = "hidden";
     pricingCardsWrap.style.scrollSnapType = "x mandatory"; // This might be less relevant if not truly scrolling
     pricingCardsWrap.style.webkitOverflowScrolling = "touch";
 
@@ -101,7 +100,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Reset styles applied by the slider
     pricingCardsWrap.style.display = ""; // Reset to original (or CSS defined)
-    pricingCardsWrap.style.overflowX = "";
     pricingCardsWrap.style.scrollSnapType = "";
     pricingCardsWrap.style.webkitOverflowScrolling = "";
 
