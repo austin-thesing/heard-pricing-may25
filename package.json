@@ -2,6 +2,8 @@
   "name": "heard-pricing-scripts",
   "version": "1.0.0",
   "scripts": {
-    "build": "bun build ./heard-pricing.js --outdir ./dist/heard-pricing.js --minify"
+    "build": "bun run build:readable && bun run build:dist",
+    "build:readable": "bun build ./heard-pricing.js --outfile ./dist/heard-pricing.js/heard-pricing.readable.js",
+    "build:dist": "bun build ./heard-pricing.js --outdir ./dist/heard-pricing.js --minify"
   }
 }

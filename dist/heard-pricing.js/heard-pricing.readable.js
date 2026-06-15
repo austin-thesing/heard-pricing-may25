@@ -1,21 +1,70 @@
-document.addEventListener("DOMContentLoaded", function () {
+// pricing-toggle.js
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleButton = document.querySelector(".pricing-chart_toggle-container");
+  const getPriceElements = () => document.querySelectorAll("[price-per-month][price-per-annual]");
+  const getDetailElements = () => document.querySelectorAll("[monthly-details][annual-details]");
+  const getHideIfMonthlyElements = () => document.querySelectorAll('[hide-if="monthly"]');
+  const getPriceMonthElements = () => document.querySelectorAll(".price-month");
+  const getTaxPackageValues = () => document.querySelectorAll(".tax-package-value");
+  const getPlanBadges = () => document.querySelectorAll(".badge-tax-plan");
+  let currentView = "annual";
+  const setTextFromAttr = (elements, attributeName) => {
+    elements.forEach((el) => {
+      const value = el.getAttribute(attributeName);
+      if (value !== null && value !== el.textContent) {
+        el.textContent = value;
+      }
+    });
+  };
+  function updateView() {
+    if (currentView === "annual") {
+      setTextFromAttr(getPriceElements(), "price-per-annual");
+      setTextFromAttr(getDetailElements(), "annual-details");
+      getHideIfMonthlyElements().forEach((el) => {
+        el.style.opacity = "1";
+      });
+      setTextFromAttr(getPriceMonthElements(), "ppm-annually");
+      setTextFromAttr(getTaxPackageValues(), "a-value");
+      setTextFromAttr(getPlanBadges(), "a-value");
+    } else {
+      setTextFromAttr(getPriceElements(), "price-per-month");
+      setTextFromAttr(getDetailElements(), "monthly-details");
+      getHideIfMonthlyElements().forEach((el) => {
+        el.style.opacity = "0";
+      });
+      setTextFromAttr(getPriceMonthElements(), "ppm-monthly");
+      setTextFromAttr(getTaxPackageValues(), "m-value");
+      setTextFromAttr(getPlanBadges(), "m-value");
+    }
+  }
+  if (toggleButton) {
+    toggleButton.addEventListener("click", () => {
+      currentView = currentView === "annual" ? "monthly" : "annual";
+      updateView();
+    });
+  } else {
+    console.error('Pricing toggle button with class "pricing-chart_toggle-container" not found.');
+  }
+  updateView();
+  window.addEventListener("load", updateView);
+});
+
+// pricing-slider.js
+document.addEventListener("DOMContentLoaded", function() {
   const pricingCardsWrap = document.querySelector(".pricing-cards-wrap-may-2025");
   if (!pricingCardsWrap) {
     console.error("Pricing cards wrap element not found.");
     return;
   }
-
   let isSliderActive = false;
   let touchstartX = 0;
   let touchendX = 0;
   let currentCardIndex = 0;
   let cards = [];
   let switchOptions = [];
-
   function getPricingCardSlides() {
     return Array.from(pricingCardsWrap.children).filter((child) => child.matches(".pricing-card-may25") || child.querySelector(".pricing-card-may25"));
   }
-
   function createControls() {
     const controlsWrapper = document.createElement("div");
     controlsWrapper.className = "pricing-slider-controls";
@@ -31,9 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
     controlsWrapper.style.borderRadius = "999px";
     controlsWrapper.style.background = "#fff";
     controlsWrapper.style.boxShadow = "0 1px 5px rgba(0, 0, 0, 0.14)";
-
     const fallbackLabels = cards.length === 3 ? ["Lite", "Essential", "Premium"] : [];
-
     switchOptions = cards.map((card, index) => {
       const headingText = card.querySelector("h3")?.textContent?.trim();
       const option = document.createElement("button");
@@ -61,15 +108,12 @@ document.addEventListener("DOMContentLoaded", function () {
       controlsWrapper.appendChild(option);
       return option;
     });
-
-    // Insert controls above the pricing cards on mobile
     pricingCardsWrap.parentNode.insertBefore(controlsWrapper, pricingCardsWrap);
-
     updateSwitchOptions();
   }
-
   function updateSwitchOptions() {
-    if (!isSliderActive) return;
+    if (!isSliderActive)
+      return;
     switchOptions.forEach((option, index) => {
       const isActive = index === currentCardIndex;
       option.setAttribute("aria-selected", isActive ? "true" : "false");
@@ -78,76 +122,64 @@ document.addEventListener("DOMContentLoaded", function () {
       option.style.boxShadow = isActive ? "0 1px 2px rgba(0, 0, 0, 0.08)" : "none";
     });
   }
-
   function initSlider() {
     cards = getPricingCardSlides();
-    if (cards.length <= 1) return; // No need for slider if 1 or 0 cards
-
+    if (cards.length <= 1)
+      return;
     pricingCardsWrap.style.display = "block";
-    pricingCardsWrap.style.scrollSnapType = "x mandatory"; // This might be less relevant if not truly scrolling
+    pricingCardsWrap.style.scrollSnapType = "x mandatory";
     pricingCardsWrap.style.webkitOverflowScrolling = "touch";
-
     cards.forEach((card, index) => {
       card.style.minWidth = "100%";
-      card.style.scrollSnapAlign = "start"; // This might be less relevant
-      card.style.display = index === 0 ? "flex" : "none"; // Active card is flex, others none
+      card.style.scrollSnapAlign = "start";
+      card.style.display = index === 0 ? "flex" : "none";
     });
-
     isSliderActive = true;
     currentCardIndex = 0;
-    createControls(); // Create segmented plan switch
-    updateCardVisibility(); // Initial visibility and control state update
+    createControls();
+    updateCardVisibility();
   }
-
   function destroySlider() {
-    if (!pricingCardsWrap || !isSliderActive) return;
-
-    // Reset styles applied by the slider
-    pricingCardsWrap.style.display = ""; // Reset to original (or CSS defined)
+    if (!pricingCardsWrap || !isSliderActive)
+      return;
+    pricingCardsWrap.style.display = "";
     pricingCardsWrap.style.scrollSnapType = "";
     pricingCardsWrap.style.webkitOverflowScrolling = "";
-
     cards.forEach((card) => {
       card.style.minWidth = "";
       card.style.scrollSnapAlign = "";
-      card.style.display = ""; // Reset to original (or CSS defined)
+      card.style.display = "";
     });
-
-    // Remove controls
     const controlsWrapper = document.querySelector(".pricing-slider-controls");
     if (controlsWrapper) {
       controlsWrapper.remove();
     }
     switchOptions = [];
-
     isSliderActive = false;
-    cards = []; // Clear the cards array
+    cards = [];
   }
-
   function updateCardVisibility() {
-    if (!isSliderActive || cards.length === 0) return;
+    if (!isSliderActive || cards.length === 0)
+      return;
     cards.forEach((card, index) => {
-      card.style.display = index === currentCardIndex ? "flex" : "none"; // Active card is flex, others none
+      card.style.display = index === currentCardIndex ? "flex" : "none";
     });
     updateSwitchOptions();
   }
-
   function showNextCard() {
     if (currentCardIndex < cards.length - 1) {
       currentCardIndex++;
       updateCardVisibility();
     }
   }
-
   function showPrevCard() {
     if (currentCardIndex > 0) {
       currentCardIndex--;
       updateCardVisibility();
     }
   }
-
   function handleGesture() {
-    const threshold = 50; // Minimum swipe distance
+    const threshold = 50;
     if (touchendX < touchstartX - threshold) {
       showNextCard();
     }
@@ -155,29 +187,19 @@ document.addEventListener("DOMContentLoaded", function () {
       showPrevCard();
     }
   }
-
-  pricingCardsWrap.addEventListener(
-    "touchstart",
-    function (event) {
-      if (!isSliderActive) return;
-      touchstartX = event.changedTouches[0].screenX;
-    },
-    { passive: true }
-  );
-
-  pricingCardsWrap.addEventListener(
-    "touchend",
-    function (event) {
-      if (!isSliderActive) return;
-      touchendX = event.changedTouches[0].screenX;
-      handleGesture();
-    },
-    { passive: true }
-  );
-
+  pricingCardsWrap.addEventListener("touchstart", function(event) {
+    if (!isSliderActive)
+      return;
+    touchstartX = event.changedTouches[0].screenX;
+  }, { passive: true });
+  pricingCardsWrap.addEventListener("touchend", function(event) {
+    if (!isSliderActive)
+      return;
+    touchendX = event.changedTouches[0].screenX;
+    handleGesture();
+  }, { passive: true });
   function checkBreakpoint() {
     const screenWidth = window.innerWidth;
-    // Mobile portrait (240px - 479px) and Mobile landscape (480px - 767px)
     if (screenWidth >= 240 && screenWidth <= 767) {
       if (!isSliderActive) {
         initSlider();
@@ -188,10 +210,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   }
-
-  // Initial check
   checkBreakpoint();
-
-  // Listen for window resize events
   window.addEventListener("resize", checkBreakpoint);
 });
